@@ -59,8 +59,32 @@ jobs:
           sed -i "/set network.\$1.proto='static'/{s/$/\n\t\t\t\tset network.\$1.dns='223.5.5.5 192.168.1.1'/}" package/base-files/files/bin/config_generate
           sed -i '/uci commit system/i\uci set system.@system[0].hostname='cym-router'' package/lean/default-settings/files/zzz-default-settings
           sed -i "s/OpenWrt /Cymrouter build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: creat .config 
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          cp x86.conf /mnt/
+          cd /mnt/x86
+          cat ../x86.conf > ./.config
+          sed -i 's/^[ \t]*//g' ./.config
+          make defconfig
+      - name: start make 
+        run: |
+          cd /mnt/x86
+          make download -j$(nproc)
+          make V=s -j$(nproc)
+      - name: mv /mnt/x86/bin/targets/x86/64/*.img.gz
+        run: |
+          mkdir file
+          mv /mnt/x86/bin/targets/x86/64/*.img.gz file/
+          echo "###--------------------------------------------###"
+          ls -lh
+          cd file && ls -lh
+          echo "strDate=$(TZ=UTC-8 date +%Y-%m-%d)" >> $GITHUB_ENV
+      - name: Upload release asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.CYM_TOKEN }}
+          tag: ${{env.strDate}}
+          file_glob: true
+          overwrite: true
+          release_name: ${{env.strDate}} 自动发布
+          file: file/*

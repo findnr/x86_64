@@ -41,7 +41,7 @@ jobs:
       - name: git clone lede
         run: |
           cd /mnt
-          git clone ttps://github.com/coolsnowwolf/lede.git x86
+          git clone https://github.com/coolsnowwolf/lede.git x86
       - name: add feeds.config.default
         run: |
           cd /mnt/x86

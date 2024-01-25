@@ -38,9 +38,27 @@ jobs:
           uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
           sudo chmod 777 /mnt
           cd / && ls -l
-      - name: Run a one-line script
-        run: echo Hello, world!
-
+      - name: git clone lede
+        run: |
+          cd /mnt
+          git clone ttps://github.com/coolsnowwolf/lede.git x86
+      - name: add feeds.config.default
+        run: |
+          cd /mnt/x86
+          sed -i '$a src-git istore https://github.com/linkease/istore;main' feeds.conf.default
+          sed -i '$a src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main' feeds.conf.default
+          sed -i '$a src-git passwall2 https://github.com/xiaorouji/openwrt-passwall2.git;main' feeds.conf.default
+          sed -i '$a src-git helloworld https://github.com/fw876/helloworld.git' feeds.conf.default
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+      - name: mid ip dns gatawey
+        run: |
+          cd /mnt/x86
+          sed -i 's/192.168.1.1/192.168.1.180/g' package/base-files/files/bin/config_generate
+          sed -i "/set network.\$1.proto='static'/{s/$/\n\t\t\t\tset network.\$1.gateway='192.168.1.1'/}" package/base-files/files/bin/config_generate
+          sed -i "/set network.\$1.proto='static'/{s/$/\n\t\t\t\tset network.\$1.dns='223.5.5.5 192.168.1.1'/}" package/base-files/files/bin/config_generate
+          sed -i '/uci commit system/i\uci set system.@system[0].hostname='cym-router'' package/lean/default-settings/files/zzz-default-settings
+          sed -i "s/OpenWrt /Cymrouter build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |

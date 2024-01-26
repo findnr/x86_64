@@ -6,3 +6,11 @@
 - linux kernel版本是6.1.x（会根据https://github.com/coolsnowwolf/lede.git版本的升级自动升级）
 - 用户名：root
 - 密码：password
+##### 首先感谢大佬的开源项目，是在他们基础上构建出来的：
+- https://github.com/coolsnowwolf/lede.git
+- https://github.com/linkease/istore
+- https://github.com/xiaorouji/openwrt-passwall-packages.git
+- https://github.com/xiaorouji/openwrt-passwall2.git
+- https://github.com/fw876/helloworld.git
+
+说明：如有侵权请及时联系删除

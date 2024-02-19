@@ -64,8 +64,7 @@ jobs:
         run: |
           cp x86.conf /mnt/
           cd /mnt/x86
-          cat ../x86.conf > ./.config
-          sed -i 's/^[ \t]*//g' ./.config
+          cp ../x86.conf .config
           make defconfig
       - name: start make 
         run: |
